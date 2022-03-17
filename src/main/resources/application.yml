@@ -6,7 +6,8 @@ spring:
     name: user-service
 
 eureka:
-
+  instance:
+    instance-id: ${spring.cloud.client.hostname}:${spring.application.instance_id:${random.value}}
   client:
     fetch-registry: true # 유레카 서버로부터 인스턴스들의 정보를 주기적으로 가져올 것인지 설정. true이면 갱신된 정보를 받겠다는 뜻. 기본값은 true.
     register-with-eureka: true # 유레카 서버에 클라이언트를 등록시킬지 여부 설정. 기본값은 true.
