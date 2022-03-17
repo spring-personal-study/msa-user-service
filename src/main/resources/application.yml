@@ -13,3 +13,6 @@ eureka:
     register-with-eureka: true # 유레카 서버에 클라이언트를 등록시킬지 여부 설정. 기본값은 true.
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka # 유레카 서버 주소 지정
+
+greeting:
+  message: Hello... World !
