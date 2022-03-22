@@ -40,3 +40,11 @@ eureka:
 
 greeting:
   message: Hello... World ! Welcome to the Simple E-commerce.
+
+logging:
+  level:
+    com.example.msauserservice: DEBUG
+
+token:
+  expiration_time: 86400000
+  secret: secretusertoken1234secretusertoken1234secretusertoken1234secretusertoken1234secretusertoken1234secretusertoken1234secretusertoken1234secretusertoken1234
