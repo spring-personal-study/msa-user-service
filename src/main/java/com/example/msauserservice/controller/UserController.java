@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user-service")
+@RequestMapping("/")
 public class UserController {
 
     private final Greeting greeting;
@@ -69,5 +69,10 @@ public class UserController {
         BeanUtils.copyProperties(userDto, user);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
+
+//    @PostMapping("/login")
+//    public ResponseEntity<Void> login() {
+//        return ResponseEntity.status(HttpStatus.OK).body(null);
+//    }
 
 }
