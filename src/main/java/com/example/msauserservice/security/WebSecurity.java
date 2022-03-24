@@ -28,9 +28,11 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        String property = env.getProperty("gateway.ip");
+
         http.authorizeRequests()
-                .antMatchers("/**")
-                .access("true")
+                .antMatchers("/actuator/**").permitAll()
+                .antMatchers("/**").access("true")
                 .and()
                 .addFilter(getAuthenticationFilter());
 

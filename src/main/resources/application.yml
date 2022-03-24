@@ -44,7 +44,9 @@ greeting:
 logging:
   level:
     com.example.msauserservice: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans
 
-token:
-  expiration_time: 86400000
-  secret: secretusertoken1234secretusertoken1234secretusertoken1234secretusertoken1234secretusertoken1234secretusertoken1234secretusertoken1234secretusertoken1234

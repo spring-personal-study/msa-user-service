@@ -8,6 +8,7 @@ import com.example.msauserservice.model.UserEntity;
 import com.example.msauserservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +23,23 @@ import java.util.List;
 public class UserController {
 
     private final Greeting greeting;
-    //private final Environment env;
+    private final Environment env;
 
     private final UserService userService;
 
 
     @GetMapping("/health_check")
     public String status(HttpServletRequest request) {
-        return String.format("It's Working in User Service on Port %s", request.getServerPort());
+        //System.out.println(request.getServerPort());
+        return String.format("It's Working in User Service, " +
+                "port(local.server.port)=%s, " +
+                "port(server.port)=%s, " +
+                "token secret=%s, " +
+                "token expiration time=%s",
+                env.getProperty("local.server.port"),
+                env.getProperty("server.port"),
+                env.getProperty("token.secret"),
+                env.getProperty("token.expiration_time"));
     }
 
     @GetMapping("/welcome")

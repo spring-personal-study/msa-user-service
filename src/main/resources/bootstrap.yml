@@ -1,0 +1,5 @@
+spring:
+  cloud:
+    config:
+      uri: http://localhost:8888
+      name: ecommerce # config-service 가 참조하고 있는 파일의 이름 (ecommerce.yml). 기본값은 application.yml
