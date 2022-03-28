@@ -11,11 +11,12 @@ spring:
         web-allow-others: true
       path: /h2-console
 
-  datasource:
-    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+# 아래 설정은 config-service에서 참조하는 native 파일로 옮겨서 사용할 것이므로 주석처리한다.
+#  datasource:
+#    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
 
   jpa:
     hibernate:
