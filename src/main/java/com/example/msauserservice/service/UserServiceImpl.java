@@ -1,18 +1,25 @@
 package com.example.msauserservice.service;
 
+import com.example.msauserservice.model.ResponseOrder;
 import com.example.msauserservice.model.UserDto;
 import com.example.msauserservice.model.UserEntity;
 import com.example.msauserservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -21,6 +28,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
+    private final Environment env;
+    private final RestTemplate restTemplate;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -44,8 +53,12 @@ public class UserServiceImpl implements UserService {
         }
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userEntity, userDto);
-
-        userDto.setOrders(List.of());
+        String orderUrl = String.format(Objects.requireNonNull(env.getProperty("order_service.url")), userId);
+        ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<ResponseOrder>>() {
+                });
+        List<ResponseOrder> ordersList = orderListResponse.getBody();
+        userDto.setOrders(ordersList);
 
         return userDto;
     }
