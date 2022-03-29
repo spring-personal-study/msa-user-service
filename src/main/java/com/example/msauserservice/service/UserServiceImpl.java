@@ -1,5 +1,6 @@
 package com.example.msauserservice.service;
 
+import com.example.msauserservice.client.OrderServiceClient;
 import com.example.msauserservice.model.ResponseOrder;
 import com.example.msauserservice.model.UserDto;
 import com.example.msauserservice.model.UserEntity;
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder encoder;
     private final Environment env;
     private final RestTemplate restTemplate;
+    private final OrderServiceClient feignClient;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -53,11 +55,16 @@ public class UserServiceImpl implements UserService {
         }
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userEntity, userDto);
-        String orderUrl = String.format(Objects.requireNonNull(env.getProperty("order_service.url")), userId);
-        ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<ResponseOrder>>() {
-                });
-        List<ResponseOrder> ordersList = orderListResponse.getBody();
+        // using RestTemplate
+//        String orderUrl = String.format(Objects.requireNonNull(env.getProperty("order_service.url")), userId);
+//        ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
+//                new ParameterizedTypeReference<List<ResponseOrder>>() {
+//                });
+//        List<ResponseOrder> ordersList = orderListResponse.getBody();
+
+        // using FeignClient
+        List<ResponseOrder> ordersList = feignClient.getOrders(userId);
+
         userDto.setOrders(ordersList);
 
         return userDto;
