@@ -80,6 +80,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
+
+//  이 엔드포인트는 gateway-service 에서 매핑되어 있으며, WebSecurity 에서 추가된 AuthenticationFilter 내에서 사용자의 로그인 요청 정보을 받아 처리하기 떄문에
+//  컨트롤러에서 직접적으로 로그인처리를 수행할 필요가 없습니다. 즉, 로그인 요청을 필터에서 처리하고 UsernamePasswordAuthenticationToken 에 담아 관리합니다.
 //    @PostMapping("/login")
 //    public ResponseEntity<Void> login() {
 //        return ResponseEntity.status(HttpStatus.OK).body(null);
