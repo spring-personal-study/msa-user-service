@@ -1,5 +1,6 @@
 package com.example.msauserservice;
 
+import com.example.msauserservice.client.FeignErrorDecoder;
 import feign.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,7 +9,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.client.RestTemplate;
-
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -33,4 +33,5 @@ public class MsaUserServiceApplication {
     public Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;
     }
+
 }

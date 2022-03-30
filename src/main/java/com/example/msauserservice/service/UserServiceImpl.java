@@ -61,17 +61,19 @@ public class UserServiceImpl implements UserService {
 //                });
 //        List<ResponseOrder> ordersList = orderListResponse.getBody();
 
-        // using FeignClient
+        // using FeignClient with try catch
         // with Feign Exception Handling: 없는 url 로 요청하여 404과 같은 에러들이 발생할 경우를 대비하여 예외처리가 필요하다.
         // 예외처리가 되어있지 못하면, 데이터 결과값 중 일부만 잘못되어도 전체 데이터가 영향을 받아 사용자에게 올바른 데이터조차 전달하지 못하게 된다.
         // 예외가 발생한 구간에만 예외처리를 함으로서 올바른 데이터는 사용자에게 전달될 수 있도록 한다.
-        List<ResponseOrder> ordersList = null;
-        try {
-            ordersList = feignClient.getOrders(userId);
-        } catch (FeignException ex) {
-            log.error(ex.getMessage());
-        }
+//        List<ResponseOrder> ordersList = null;
+//        try {
+//            ordersList = feignClient.getOrders(userId);
+//        } catch (FeignException ex) {
+//            log.error(ex.getMessage());
+//        }
 
+        // using FeignClient with bean (feignErrorDecoder)
+        List<ResponseOrder> ordersList = feignClient.getOrders(userId);
         userDto.setOrders(ordersList);
 
         return userDto;
