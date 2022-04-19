@@ -1,14 +1,16 @@
 package com.example.msauserservice.service;
 
 import com.example.msauserservice.client.OrderServiceClient;
+import com.example.msauserservice.config.Resilience4JConfig;
 import com.example.msauserservice.model.ResponseOrder;
 import com.example.msauserservice.model.UserDto;
 import com.example.msauserservice.model.UserEntity;
 import com.example.msauserservice.repository.UserRepository;
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,7 +32,10 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder encoder;
     private final Environment env;
     private final RestTemplate restTemplate;
-    private final OrderServiceClient feignClient;
+    private final OrderServiceClient orderServiceClient;
+
+    // 기본 서킷브레이커를 사용하려면, (config 패키지 안의 Resilience4JConfig 클래스에서 커스텀한 서킷브레이커 빈을 제거하세요.)
+    private final CircuitBreakerFactory circuitBreakerFactory;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -54,26 +59,31 @@ public class UserServiceImpl implements UserService {
         }
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userEntity, userDto);
-        // using RestTemplate
+        // 1. using RestTemplate
 //        String orderUrl = String.format(Objects.requireNonNull(env.getProperty("order_service.url")), userId);
 //        ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
 //                new ParameterizedTypeReference<List<ResponseOrder>>() {
 //                });
 //        List<ResponseOrder> ordersList = orderListResponse.getBody();
 
-        // using FeignClient with try catch
+        // 2. using FeignClient with try catch
         // with Feign Exception Handling: 없는 url 로 요청하여 404과 같은 에러들이 발생할 경우를 대비하여 예외처리가 필요하다.
         // 예외처리가 되어있지 못하면, 데이터 결과값 중 일부만 잘못되어도 전체 데이터가 영향을 받아 사용자에게 올바른 데이터조차 전달하지 못하게 된다.
         // 예외가 발생한 구간에만 예외처리를 함으로서 올바른 데이터는 사용자에게 전달될 수 있도록 한다.
 //        List<ResponseOrder> ordersList = null;
 //        try {
-//            ordersList = feignClient.getOrders(userId);
+//            ordersList = orderServiceClient.getOrders(userId);
 //        } catch (FeignException ex) {
 //            log.error(ex.getMessage());
 //        }
 
-        // using FeignClient with bean (feignErrorDecoder)
-        List<ResponseOrder> ordersList = feignClient.getOrders(userId);
+        // 3. using FeignClient with bean (feignErrorDecoder)
+        //List<ResponseOrder> ordersList = orderServiceClient.getOrders(userId);
+
+        // 4. circuit breaker
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
+        List<ResponseOrder> ordersList = circuitBreaker.run(() -> orderServiceClient.getOrders(userId), throwable -> List.of());
+
         userDto.setOrders(ordersList);
 
         return userDto;
