@@ -81,8 +81,11 @@ public class UserServiceImpl implements UserService {
         //List<ResponseOrder> ordersList = orderServiceClient.getOrders(userId);
 
         // 4. circuit breaker
+        log.info("Before call orders microservice");
         CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitBreaker");
         List<ResponseOrder> ordersList = circuitBreaker.run(() -> orderServiceClient.getOrders(userId), throwable -> List.of());
+        log.info("After call orders microservice");
+        // end of circuit breaker
 
         userDto.setOrders(ordersList);
 
