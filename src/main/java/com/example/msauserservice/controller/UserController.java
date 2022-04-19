@@ -6,6 +6,7 @@ import com.example.msauserservice.model.ResponseUser;
 import com.example.msauserservice.model.UserDto;
 import com.example.msauserservice.model.UserEntity;
 import com.example.msauserservice.service.UserService;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.env.Environment;
@@ -29,6 +30,7 @@ public class UserController {
 
 
     @GetMapping("/health_check")
+    @Timed(value = "users.status", longTask = true)
     public String status(HttpServletRequest request) {
         //System.out.println(request.getServerPort());
         return String.format("It's Working in User Service, " +
@@ -43,6 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/welcome")
+    @Timed(value = "users.welcome", longTask = true)
     public String welcome() {
         //return env.getProperty("greeting.message");
         return greeting.getMessage();
